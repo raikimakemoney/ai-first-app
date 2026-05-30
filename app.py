@@ -2,12 +2,26 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import streamlit as st
+from pypdf import PdfReader
 
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 st.title("Raiki AI")
+
+uploaded_file = st.file_uploader(
+    "PDFをアップロードしてください",
+    type="pdf"
+)
+
+pdf_text = ""
+
+if uploaded_file:
+    reader = PdfReader(uploaded_file)
+
+    for page in reader.pages:
+        pdf_text += page.extract_text() + "\n"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -29,9 +43,17 @@ if question:
         st.write(question)
 
     response = client.responses.create(
-        model="gpt-5-mini",
-        input=question
-    )
+    model="gpt-5-mini",
+    input=f"""
+以下のPDF内容を参考にして回答してください。
+
+PDF内容:
+{pdf_text}
+
+質問:
+{question}
+"""
+)
 
     answer = response.output_text
 
