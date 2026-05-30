@@ -5,18 +5,38 @@ import streamlit as st
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 st.title("Raiki AI")
 
-question = st.text_input("質問してください")
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if st.button("履歴を削除"):
+    st.session_state.messages = []
+    st.rerun()
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+question = st.chat_input("質問してください")
 
 if question:
+    st.session_state.messages.append({"role": "user", "content": question})
+
+    with st.chat_message("user"):
+        st.write(question)
+
     response = client.responses.create(
         model="gpt-5-mini",
         input=question
     )
 
-    st.write(response.output_text)
+    answer = response.output_text
+
+    st.session_state.messages.append({"role": "assistant", "content": answer})
+
+    with st.chat_message("assistant"):
+        st.write(answer)
+       
