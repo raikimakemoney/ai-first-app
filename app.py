@@ -10,18 +10,23 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 st.title("Raiki AI")
 
-uploaded_file = st.file_uploader(
+uploaded_files = st.file_uploader(
     "PDFをアップロードしてください",
-    type="pdf"
+    type="pdf",
+    accept_multiple_files=True
 )
 
 pdf_text = ""
 
-if uploaded_file:
-    reader = PdfReader(uploaded_file)
+if uploaded_files:
+    for uploaded_file in uploaded_files:
+        reader = PdfReader(uploaded_file)
 
-    for page in reader.pages:
-        pdf_text += page.extract_text() + "\n"
+        for page in reader.pages:
+            text = page.extract_text()
+
+            if text:
+                pdf_text += text + "\n"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -45,12 +50,21 @@ if question:
     response = client.responses.create(
     model="gpt-5-mini",
     input=f"""
-以下のPDF内容を参考にして回答してください。
+あなたはPDF資料を読む専門アシスタントです。
+必ず以下のPDF内容だけを根拠にして答えてください。
+PDFに書かれていないことは、推測せず「PDF内には明記されていません」と答えてください。
+
+回答ルール:
+- まず結論を短く答える
+- 次に根拠をPDF内容に沿って説明する
+- 箇条書きでわかりやすくする
+- 日本語で答える
+- PDFと関係ない一般論を混ぜすぎない
 
 PDF内容:
 {pdf_text}
 
-質問:
+ユーザーの質問:
 {question}
 """
 )
