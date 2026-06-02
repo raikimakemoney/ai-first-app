@@ -35,7 +35,7 @@ if uploaded_files:
 
 if pdf_text:
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
         if st.button("📄 要約"):
@@ -52,6 +52,10 @@ if pdf_text:
     with col4:
         if st.button("📝 レポート"):
             question = "この資料をもとに、大学提出用の500字程度のレポートを作成してください。単なる要約ではなく、内容の考察や重要性にも触れてください。"                             
+
+    with col5:
+        if st.button("✍️ 自然なレポート"):
+            question = "この資料をもとに、大学提出用の500字程度のレポートを作成してください。AIが書いたような硬すぎる文章ではなく、大学生が自分で書いたような自然で少し口語的な文体にしてください。ただし内容は薄くせず、単なる要約ではなく、自分の経験や具体例、考察も含めてください。"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
