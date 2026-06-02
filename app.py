@@ -18,6 +18,8 @@ uploaded_files = st.file_uploader(
 
 pdf_text = ""
 
+question = ""
+
 if uploaded_files:
     for uploaded_file in uploaded_files:
 
@@ -31,6 +33,26 @@ if uploaded_files:
             if text:
                 pdf_text += text + "\n"
 
+if pdf_text:
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        if st.button("📄 要約"):
+            question = "この資料を3点にまとめて要約してください"
+
+    with col2:
+        if st.button("⭐ 重要ポイント"):
+            question = "この資料の重要ポイントを5つ挙げてください"
+
+    with col3:
+        if st.button("🎓 予想問題"):
+            question = "この資料から試験に出そうな問題を5問作成してください"   
+
+    with col4:
+        if st.button("📝 レポート"):
+            question = "この資料をもとに、大学提出用の500字程度のレポートを作成してください。単なる要約ではなく、内容の考察や重要性にも触れてください。"                             
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -42,7 +64,10 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-question = st.chat_input("質問してください")
+user_question = st.chat_input("質問してください")
+
+if user_question:
+    question = user_question
 
 if question:
     st.session_state.messages.append({"role": "user", "content": question})
