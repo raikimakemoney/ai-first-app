@@ -33,9 +33,19 @@ if uploaded_files:
             if text:
                 pdf_text += text + "\n"
 
+if uploaded_files:
+    st.success(f"{len(uploaded_files)}個のPDFを読み込みました")
+
+    st.write("アップロード中のPDF")
+
+    for uploaded_file in uploaded_files:
+        st.write(f"✅ {uploaded_file.name}")
+
 if pdf_text:
 
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    st.subheader("📚 学習モード")
+
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         if st.button("📄 要約"):
@@ -46,20 +56,74 @@ if pdf_text:
             question = "この資料の重要ポイントを5つ挙げてください"
 
     with col3:
-        if st.button("🎓 予想問題"):
-            question = "この資料から試験に出そうな問題を5問作成してください"   
+        if st.button("📚 単語帳"):
+            question = """
+この資料から重要語句を20個抽出してください。
+
+以下の形式で出力してください。
+
+用語：
+説明：
+
+試験前に暗記しやすいように簡潔にまとめてください。
+"""
 
     with col4:
-        if st.button("📝 レポート"):
-            question = "この資料をもとに、大学提出用の500字程度のレポートを作成してください。単なる要約ではなく、内容の考察や重要性にも触れてください。"                             
+        if st.button("⚡ 試験直前"):
+            question = """
+この資料について試験直前用のまとめを作成してください。
+
+以下の形式で出力してください。
+
+1. 絶対覚えるべき内容5個
+2. 頻出キーワード10個
+3. 3分で読める超要約
+4. テストで引っかかりやすいポイント
+
+できるだけ短く実践的にまとめてください。
+"""
+
+    st.subheader("🎓 試験対策モード")
+
+    col5, col6 = st.columns(2)
 
     with col5:
+        if st.button("🎓 予想問題"):
+            question = "この資料から試験に出そうな問題を5問作成してください"
+
+    with col6:
+        if st.button("🧠 完全試験対策"):
+            question = """
+この資料をもとに試験対策を作成してください。
+
+以下を出力してください。
+
+1. 重要語句20個
+2. 一問一答10問
+3. 記述問題5問
+4. 試験に出そうなポイント5個
+5. 最後に3分で復習できる要約
+
+見やすく整理して日本語で出力してください。
+"""
+
+    st.subheader("📝 レポートモード")
+
+    col7, col8 = st.columns(2)
+
+    with col7:
+        if st.button("📝 レポート"):
+            question = "この資料をもとに、大学提出用の500字程度のレポートを作成してください。単なる要約ではなく、内容の考察や重要性にも触れてください。"
+
+    with col8:
         if st.button("✍️ 自然なレポート"):
             question = "この資料をもとに、大学提出用の500字程度のレポートを作成してください。AIが書いたような硬すぎる文章ではなく、大学生が自分で書いたような自然で少し口語的な文体にしてください。ただし内容は薄くせず、単なる要約ではなく、自分の経験や具体例、考察も含めてください。"
 
-    with col6:
-        if st.button("🔍 PDF比較"):
-            question = "アップロードされた複数のPDFを比較してください。それぞれのPDFごとの内容、共通点、違い、重要な変化をわかりやすく整理してください。最後に、試験やレポートで重要になりそうな観点もまとめてください。"
+    st.subheader("🔍 分析モード")
+
+    if st.button("🔍 PDF比較"):
+        question = "アップロードされた複数のPDFを比較してください。それぞれのPDFごとの内容、共通点、違い、重要な変化をわかりやすく整理してください。最後に、試験やレポートで重要になりそうな観点もまとめてください。"
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
