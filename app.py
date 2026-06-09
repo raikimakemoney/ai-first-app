@@ -8,7 +8,17 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-st.title("Raiki AI")
+st.title("📚 Raiki AI")
+st.caption("PDF学習・試験対策アシスタント")
+
+st.info(
+    "📚 PDFをアップロードして、要約・試験対策・レポート作成・PDF比較ができます"
+)
+
+st.sidebar.title("📚 Raiki AI")
+
+st.sidebar.markdown("---")
+st.sidebar.write("🧑‍💻 Created by Raiki")
 
 uploaded_files = st.file_uploader(
     "PDFをアップロードしてください",
@@ -19,6 +29,9 @@ uploaded_files = st.file_uploader(
 pdf_text = ""
 
 question = ""
+
+if uploaded_files:
+    st.sidebar.write(f"📄 PDF数: {len(uploaded_files)}")
 
 if uploaded_files:
     for uploaded_file in uploaded_files:
@@ -127,6 +140,8 @@ if pdf_text:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+st.sidebar.write(f"💬 チャット数: {len(st.session_state.messages)}")
 
 if st.button("履歴を削除"):
     st.session_state.messages = []
