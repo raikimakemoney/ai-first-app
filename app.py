@@ -54,6 +54,9 @@ if uploaded_files:
     for uploaded_file in uploaded_files:
         st.write(f"✅ {uploaded_file.name}")
 
+        if st.button(f"📄 {uploaded_file.name} を要約"):
+            question = f"{uploaded_file.name} の内容だけを3点にまとめて要約してください"
+
 if pdf_text:
 
     st.subheader("📚 学習モード")
@@ -189,9 +192,11 @@ PDF内容:
 {question}
 """
 
-    response = client.responses.create(
-        model="gpt-5-mini",
-        input=prompt
+    with st.spinner("AIが考えています..."):
+
+       response = client.responses.create(
+           model="gpt-5-mini",
+           input=prompt
     )
 
     answer = response.output_text
