@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
 import streamlit as st
@@ -7,6 +8,18 @@ from pypdf import PdfReader
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+HISTORY_FILE = "chat_history.json"
+
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_history(messages):
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(messages, f, ensure_ascii=False, indent=2)
 
 st.title("📚 Raiki AI")
 st.caption("PDF学習・試験対策アシスタント")
@@ -142,12 +155,13 @@ if pdf_text:
 
 
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = load_history()
 
 st.sidebar.write(f"💬 チャット数: {len(st.session_state.messages)}")
 
 if st.button("履歴を削除"):
     st.session_state.messages = []
+    save_history(st.session_state.messages)
     st.rerun()
 
 for message in st.session_state.messages:
@@ -202,6 +216,7 @@ PDF内容:
     answer = response.output_text
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
+    save_history(st.session_state.messages)
 
     with st.chat_message("assistant"):
         st.write(answer)
