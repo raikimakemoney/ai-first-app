@@ -168,6 +168,25 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+st.download_button(
+    label="📥 会話履歴を保存",
+    data=json.dumps(
+        st.session_state.messages,
+        ensure_ascii=False,
+        indent=2
+    ),
+    file_name="chat_history.json",
+    mime="application/json"
+)   
+
+if "last_answer" in st.session_state:
+    st.download_button(
+        label="📄 最新の回答をTXT保存",
+        data=st.session_state.last_answer,
+        file_name="report.txt",
+        mime="text/plain"
+    )
+
 user_question = st.chat_input("質問してください")
 
 if user_question:
@@ -214,6 +233,7 @@ PDF内容:
     )
 
     answer = response.output_text
+    st.session_state.last_answer = answer
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
     save_history(st.session_state.messages)
